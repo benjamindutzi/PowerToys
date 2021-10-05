@@ -192,6 +192,16 @@ namespace winrt::PowerRenameUI_new::implementation
         }
     }
 
+    void MainWindow::UpdateRenamedExplorerItem(int32_t id, hstring const& newOriginalName)
+    {
+        auto itemToUpdate = FindById(id);
+        if (itemToUpdate != NULL)
+        {
+            itemToUpdate.Original(newOriginalName);
+            itemToUpdate.Renamed(L"");
+        }
+    }
+
     void MainWindow::AppendSearchMRU(hstring const& value)
     {
         m_searchMRU.Append(value);

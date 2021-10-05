@@ -74,12 +74,13 @@ public:
 
         HRESULT OnItemAdded(_In_ IPowerRenameItem* renameItem) override { return m_app->OnItemAdded(renameItem); }
         HRESULT OnUpdate(_In_ IPowerRenameItem* renameItem) override { return m_app->OnUpdate(renameItem); }
+        HRESULT OnRename(_In_ IPowerRenameItem* renameItem) override { return m_app->OnRename(renameItem); }
         HRESULT OnError(_In_ IPowerRenameItem* renameItem) override { return m_app->OnError(renameItem); }
         HRESULT OnRegExStarted(_In_ DWORD threadId) override { return m_app->OnRegExStarted(threadId); }
         HRESULT OnRegExCanceled(_In_ DWORD threadId) override { return m_app->OnRegExCanceled(threadId); }
         HRESULT OnRegExCompleted(_In_ DWORD threadId) override { return m_app->OnRegExCompleted(threadId); }
         HRESULT OnRenameStarted() override { return m_app->OnRenameStarted(); }
-        HRESULT OnRenameCompleted() override { return m_app->OnRenameCompleted(); }
+        HRESULT OnRenameCompleted(bool closeUIWindowAfterRenaming) override { return m_app->OnRenameCompleted(closeUIWindowAfterRenaming); }
 
     private:
         long m_refCount;
@@ -108,14 +109,14 @@ private:
     void PopulateExplorerItems();
     HRESULT InitAutoComplete();
     HRESULT EnumerateShellItems(_In_ IEnumShellItems* enumShellItems);
-    void SearchReplaceChanged();
+    void SearchReplaceChanged(bool forceRenaming = false);
     void ValidateFlags(PowerRenameFlags flag);
     void UpdateFlag(PowerRenameFlags flag, UpdateFlagCommand command);
     void SetHandlers();
     void ToggleItem(int32_t id, bool checked);
     void ToggleAll();
     void SwitchView();
-    void Rename();
+    void Rename(bool closeWindow);
     HRESULT ReadSettings();
     HRESULT WriteSettings();
     HRESULT OpenSettingsApp();
@@ -124,12 +125,13 @@ private:
 
     HRESULT OnItemAdded(_In_ IPowerRenameItem* renameItem);
     HRESULT OnUpdate(_In_ IPowerRenameItem* renameItem);
+    HRESULT OnRename(_In_ IPowerRenameItem* renameItem);
     HRESULT OnError(_In_ IPowerRenameItem* renameItem);
     HRESULT OnRegExStarted(_In_ DWORD threadId);
     HRESULT OnRegExCanceled(_In_ DWORD threadId);
     HRESULT OnRegExCompleted(_In_ DWORD threadId);
     HRESULT OnRenameStarted();
-    HRESULT OnRenameCompleted();
+    HRESULT OnRenameCompleted(bool closeUIWindowAfterRenaming);
 
 
     wil::unique_haccel m_accelerators;

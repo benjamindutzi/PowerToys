@@ -50,6 +50,7 @@ namespace winrt::PowerRenameUI_new::implementation
 
         void AddExplorerItem(int32_t id, hstring const& original, hstring const& renamed, int32_t type, int32_t parentId, bool checked);
         void UpdateExplorerItem(int32_t id, hstring const& newName);
+        void UpdateRenamedExplorerItem(int32_t id, hstring const& newOriginalName);
         void AppendSearchMRU(hstring const& value);
         void AppendReplaceMRU(hstring const& value);
 

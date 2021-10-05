@@ -285,17 +285,17 @@ HRESULT AppWindow::EnumerateShellItems(_In_ IEnumShellItems* enumShellItems)
     return hr;
 }
 
-void AppWindow::SearchReplaceChanged()
+void AppWindow::SearchReplaceChanged(bool forceRenaming)
 {
     // Pass updated search and replace terms to the IPowerRenameRegEx handler
     CComPtr<IPowerRenameRegEx> prRegEx;
     if (m_prManager && SUCCEEDED(m_prManager->GetRenameRegEx(&prRegEx)))
     {
         winrt::hstring searchTerm = m_mainUserControl.AutoSuggestBoxSearch().Text();
-        prRegEx->PutSearchTerm(searchTerm.c_str());
+        prRegEx->PutSearchTerm(searchTerm.c_str(), forceRenaming);
 
         winrt::hstring replaceTerm = m_mainUserControl.AutoSuggestBoxReplace().Text();
-        prRegEx->PutReplaceTerm(replaceTerm.c_str());
+        prRegEx->PutReplaceTerm(replaceTerm.c_str(), forceRenaming);
     }
 }
 
@@ -509,7 +509,7 @@ void AppWindow::SetHandlers()
 
     // BtnRename
     m_mainUserControl.BtnRename().Click([&](winrt::Windows::Foundation::IInspectable const& sender, RoutedEventArgs const&) {
-        Rename();
+        Rename(false);
     });
 
     // BtnSettings
@@ -549,11 +549,11 @@ void AppWindow::SwitchView()
     PopulateExplorerItems();
 }
 
-void AppWindow::Rename()
+void AppWindow::Rename(bool closeWindow)
 {
     if (m_prManager)
     {
-        m_prManager->Rename(m_window);
+        m_prManager->Rename(m_window, closeWindow);
     }
 
     // Persist the current settings.  We only do this when
@@ -789,6 +789,25 @@ HRESULT AppWindow::OnUpdate(_In_ IPowerRenameItem* renameItem) {
     return S_OK;
 }
 
+HRESULT AppWindow::OnRename(_In_ IPowerRenameItem* renameItem)
+{
+    int id;
+    HRESULT hr = renameItem->GetId(&id);
+    if (SUCCEEDED(hr))
+    {
+        PWSTR newName = nullptr;
+        hr = renameItem->GetOriginalName(&newName);
+        if (SUCCEEDED(hr))
+        {
+            hstring newNamehs = newName == nullptr ? hstring{} : newName;
+            m_mainUserControl.UpdateRenamedExplorerItem(id, newNamehs);
+        }
+    }
+
+    UpdateCounts();
+    return S_OK;
+}
+
 HRESULT AppWindow::OnError(_In_ IPowerRenameItem* renameItem) {
     return S_OK;
 }
@@ -809,9 +828,18 @@ HRESULT AppWindow::OnRenameStarted() {
     return S_OK;
 }
 
-HRESULT AppWindow::OnRenameCompleted() {
-    // Close the window
-    PostMessage(m_window, WM_CLOSE, (WPARAM)0, (LPARAM)0); 
+HRESULT AppWindow::OnRenameCompleted(bool closeUIWindowAfterRenaming)
+{
+    if (closeUIWindowAfterRenaming)
+    {
+        // Close the window
+        PostMessage(m_window, WM_CLOSE, (WPARAM)0, (LPARAM)0);
+    }
+    else
+    {
+        // Force renaming work to start so newly renamed items are processed right away
+        SearchReplaceChanged(true);
+    }
     return S_OK;
 }
 

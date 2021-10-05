@@ -89,7 +89,7 @@ namespace PowerRenameManagerTests
             bool replaceSuccess = false;
             for (int step = 0; step < 20; step++)
             {
-                replaceSuccess = mgr->Rename(0) == S_OK;
+                replaceSuccess = mgr->Rename(0, true) == S_OK;
                 if (replaceSuccess)
                 {
                     break;

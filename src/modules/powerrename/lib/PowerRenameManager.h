@@ -24,7 +24,8 @@ public:
     IFACEMETHODIMP Stop();
     IFACEMETHODIMP Reset();
     IFACEMETHODIMP Shutdown();
-    IFACEMETHODIMP Rename(_In_ HWND hwndParent);
+    IFACEMETHODIMP Rename(_In_ HWND hwndParent, bool closeWindow);
+    IFACEMETHODIMP GetCloseUIWindowAfterRenaming(_Out_ bool* closeUIWindowAfterRenaming);
     IFACEMETHODIMP AddItem(_In_ IPowerRenameItem* pItem);
     IFACEMETHODIMP GetItemByIndex(_In_ UINT index, _COM_Outptr_ IPowerRenameItem** ppItem);
     IFACEMETHODIMP GetVisibleItemByIndex(_In_ UINT index, _COM_Outptr_ IPowerRenameItem** ppItem);
@@ -62,6 +63,7 @@ protected:
 
     void _OnItemAdded(_In_ IPowerRenameItem* renameItem);
     void _OnUpdate(_In_ IPowerRenameItem* renameItem);
+    void _OnRename(_In_ IPowerRenameItem* renameItem);
     void _OnError(_In_ IPowerRenameItem* renameItem);
     void _OnRegExStarted(_In_ DWORD threadId);
     void _OnRegExCanceled(_In_ DWORD threadId);
@@ -126,6 +128,7 @@ protected:
 
     // Parent HWND used by IFileOperation
     HWND m_hwndParent = nullptr;
+    bool m_closeUIWindowAfterRenaming = true;
 
     HWND m_hwndMessage = nullptr;
 

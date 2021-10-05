@@ -32,6 +32,19 @@ IFACEMETHODIMP CPowerRenameItem::QueryInterface(_In_ REFIID riid, _Outptr_ void*
     return QISearch(this, qit, riid, ppv);
 }
 
+IFACEMETHODIMP CPowerRenameItem::PutPath(_In_opt_ PCWSTR newPath)
+{
+    CSRWSharedAutoLock lock(&m_lock);
+    CoTaskMemFree(m_path);
+    m_path = nullptr;
+    HRESULT hr = S_OK;
+    if (newPath != nullptr)
+    {
+        hr = SHStrDup(newPath, &m_path);
+    }
+    return hr;
+}
+
 IFACEMETHODIMP CPowerRenameItem::GetPath(_Outptr_ PWSTR* path)
 {
     *path = nullptr;
@@ -82,6 +95,19 @@ IFACEMETHODIMP CPowerRenameItem::GetTime(_Outptr_ SYSTEMTIME* time)
 IFACEMETHODIMP CPowerRenameItem::GetShellItem(_Outptr_ IShellItem** ppsi)
 {
     return SHCreateItemFromParsingName(m_path, nullptr, IID_PPV_ARGS(ppsi));
+}
+
+IFACEMETHODIMP CPowerRenameItem::PutOriginalName(_In_opt_ PCWSTR originalName)
+{
+    CSRWSharedAutoLock lock(&m_lock);
+    CoTaskMemFree(m_originalName);
+    m_originalName = nullptr;
+    HRESULT hr = S_OK;
+    if (originalName != nullptr)
+    {
+        hr = SHStrDup(originalName, &m_originalName);
+    }
+    return hr;
 }
 
 IFACEMETHODIMP CPowerRenameItem::GetOriginalName(_Outptr_ PWSTR* originalName)

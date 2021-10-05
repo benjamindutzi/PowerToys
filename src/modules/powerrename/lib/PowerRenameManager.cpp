@@ -92,10 +92,17 @@ IFACEMETHODIMP CPowerRenameManager::Stop()
     return E_NOTIMPL;
 }
 
-IFACEMETHODIMP CPowerRenameManager::Rename(_In_ HWND hwndParent)
+IFACEMETHODIMP CPowerRenameManager::Rename(_In_ HWND hwndParent, bool closeWindow)
 {
     m_hwndParent = hwndParent;
+    m_closeUIWindowAfterRenaming = closeWindow;
     return _PerformFileOperation();
+}
+
+IFACEMETHODIMP CPowerRenameManager::GetCloseUIWindowAfterRenaming(_Out_ bool* closeUIWindowAfterRenaming)
+{
+    *closeUIWindowAfterRenaming = m_closeUIWindowAfterRenaming;
+    return S_OK;
 }
 
 IFACEMETHODIMP CPowerRenameManager::Reset()
@@ -461,6 +468,7 @@ HRESULT CPowerRenameManager::_Init()
 enum
 {
     SRM_REGEX_ITEM_UPDATED = (WM_APP + 1), // Single rename item processed by regex worker thread
+    SRM_REGEX_ITEM_RENAMED,// Single rename item processed by rename worker thread
     SRM_REGEX_STARTED, // RegEx operation was started
     SRM_REGEX_CANCELED, // Regex operation was canceled
     SRM_REGEX_COMPLETE, // Regex worker thread completed
@@ -514,6 +522,16 @@ LRESULT CPowerRenameManager::_WndProc(_In_ HWND hwnd, _In_ UINT msg, _In_ WPARAM
         if (SUCCEEDED(GetItemById(id, &spItem)))
         {
             _OnUpdate(spItem);
+        }
+        break;
+    }
+    case SRM_REGEX_ITEM_RENAMED:
+    {
+        int id = static_cast<int>(lParam);
+        CComPtr<IPowerRenameItem> spItem;
+        if (SUCCEEDED(GetItemById(id, &spItem)))
+        {
+            _OnRename(spItem);
         }
         break;
     }
@@ -675,6 +693,9 @@ DWORD WINAPI CPowerRenameManager::s_fileOpWorkerThread(_In_ void* pv)
         WorkerThreadData* pwtd = reinterpret_cast<WorkerThreadData*>(pv);
         if (pwtd)
         {
+            bool closeUIWindowAfterRenaming = true;
+            pwtd->spsrm->GetCloseUIWindowAfterRenaming(&closeUIWindowAfterRenaming);
+
             // Wait to be told we can begin
             if (WaitForSingleObject(pwtd->startEvent, INFINITE) == WAIT_OBJECT_0)
             {
@@ -726,6 +747,25 @@ DWORD WINAPI CPowerRenameManager::s_fileOpWorkerThread(_In_ void* pv)
                                             if (SUCCEEDED(spItem->GetShellItem(&spShellItem)))
                                             {
                                                 spFileOp->RenameItem(spShellItem, newName, nullptr);
+                                                if (!closeUIWindowAfterRenaming)
+                                                {
+                                                    // Update item data
+                                                    PWSTR originalName = nullptr;
+                                                    winrt::check_hresult(spItem->GetOriginalName(&originalName));
+                                                    std::wstring originalNameStr{ originalName };
+                                                    PWSTR path = nullptr;
+                                                    winrt::check_hresult(spItem->GetPath(&path));
+                                                    std::wstring pathStr{ path };
+                                                    auto fileNamePos = pathStr.find_last_of(L"\\");
+                                                    pathStr.replace(fileNamePos + 1, originalNameStr.length(), std::wstring{ newName });
+                                                    spItem->PutPath(pathStr.c_str());
+                                                    spItem->PutOriginalName(newName);
+                                                    spItem->PutNewName(nullptr);
+
+                                                    int id = -1;
+                                                    winrt::check_hresult(spItem->GetId(&id));
+                                                    PostMessage(pwtd->hwndManager, SRM_REGEX_ITEM_RENAMED, GetCurrentThreadId(), id);
+                                                }
                                             }
                                             CoTaskMemFree(newName);
                                         }
@@ -1131,6 +1171,19 @@ void CPowerRenameManager::_OnUpdate(_In_ IPowerRenameItem* renameItem)
     }
 }
 
+void CPowerRenameManager::_OnRename(_In_ IPowerRenameItem* renameItem)
+{
+    CSRWSharedAutoLock lock(&m_lockEvents);
+
+    for (auto it : m_powerRenameManagerEvents)
+    {
+        if (it.pEvents)
+        {
+            it.pEvents->OnRename(renameItem);
+        }
+    }
+}
+
 void CPowerRenameManager::_OnError(_In_ IPowerRenameItem* renameItem)
 {
     CSRWSharedAutoLock lock(&m_lockEvents);
@@ -1204,7 +1257,7 @@ void CPowerRenameManager::_OnRenameCompleted()
     {
         if (it.pEvents)
         {
-            it.pEvents->OnRenameCompleted();
+            it.pEvents->OnRenameCompleted(m_closeUIWindowAfterRenaming);
         }
     }
 }
