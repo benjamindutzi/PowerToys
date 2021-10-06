@@ -10,6 +10,10 @@ namespace PowerRenameUI_new
         Int32 ChangedExplorerItemId;
         Boolean Checked;
         void ToggleAll();
+        Boolean CloseUIWindow();
+        void CloseUIWindow(Boolean closeUIWindow);
+        Boolean BtnRenameEnabled;
+        void Rename();
     }
 
     [default_interface] runtimeclass MainWindow : Windows.UI.Xaml.Controls.UserControl
@@ -37,7 +41,6 @@ namespace PowerRenameUI_new
         Windows.UI.Xaml.Controls.Primitives.ToggleButton TglBtnIncludeFolders();
         Windows.UI.Xaml.Controls.Primitives.ToggleButton TglBtnIncludeSubfolders();
 
-        Windows.UI.Xaml.Controls.Button BtnRename();
         Windows.UI.Xaml.Controls.Button BtnSettings();
 
         Windows.UI.Xaml.Controls.CheckBox ChckBoxSelectAll();
@@ -53,6 +56,6 @@ namespace PowerRenameUI_new
         void AppendSearchMRU(String value);
         void AppendReplaceMRU(String value);
 
-        UIUpdates UIUpdatesItem();
+        UIUpdates UIUpdatesItem { get; };
     }
 }

@@ -528,8 +528,10 @@
             <muxc:SplitButton Grid.Row="1"
                               Style="{StaticResource SplitAccentButtonStyle}"
                               x:Name="btn_rename"
+                              Click="btn_rename_Click"
                               HorizontalAlignment="Right"
-                              VerticalAlignment="Bottom">
+                              VerticalAlignment="Bottom"
+                              IsEnabled="{x:Bind UIUpdatesItem.BtnRenameEnabled, Mode=OneWay}">
                 <muxc:SplitButton.Content>
                     <StackPanel Orientation="Horizontal">
                         <FontIcon Glyph="&#xE13E;"
@@ -540,7 +542,7 @@
                 </muxc:SplitButton.Content>
                 <muxc:SplitButton.Flyout>
                     <MenuFlyout>
-                        <MenuFlyoutItem x:Uid="TxtBlock_BtnApplyAndClose" />
+                        <MenuFlyoutItem x:Uid="TxtBlock_BtnApplyAndClose" Click="MenuFlyoutItem_Click"/>
                     </MenuFlyout>
                 </muxc:SplitButton.Flyout>
             </muxc:SplitButton>

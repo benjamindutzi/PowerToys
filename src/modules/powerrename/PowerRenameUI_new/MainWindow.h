@@ -41,7 +41,6 @@ namespace winrt::PowerRenameUI_new::implementation
 
         Windows::UI::Xaml::Controls::Primitives::ToggleButton TglBtnEnumerateItems();
 
-        Microsoft::UI::Xaml::Controls::SplitButton BtnRename();
         Windows::UI::Xaml::Controls::Button BtnSettings();
 
         Windows::UI::Xaml::Controls::CheckBox ChckBoxSelectAll();
@@ -74,6 +73,8 @@ namespace winrt::PowerRenameUI_new::implementation
     public:
         void RegExItemClick(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::Controls::ItemClickEventArgs const& e);
         void DateTimeItemClick(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::Controls::ItemClickEventArgs const& e);
+        void btn_rename_Click(winrt::Microsoft::UI::Xaml::Controls::SplitButton const& sender, winrt::Microsoft::UI::Xaml::Controls::SplitButtonClickEventArgs const& args);
+        void MenuFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
     };
 }
 

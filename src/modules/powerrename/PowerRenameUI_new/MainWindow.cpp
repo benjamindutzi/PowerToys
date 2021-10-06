@@ -149,11 +149,6 @@ namespace winrt::PowerRenameUI_new::implementation
         return tglBtn_capitalize();
     }
 
-    Microsoft::UI::Xaml::Controls::SplitButton MainWindow::BtnRename()
-    {
-        return btn_rename();
-    }
-
     Windows::UI::Xaml::Controls::Button MainWindow::BtnSettings()
     {
         return btn_settings();
@@ -311,5 +306,17 @@ namespace winrt::PowerRenameUI_new::implementation
         auto s = e.ClickedItem().try_as<PatternSnippet>();
         DateTimeFlyout().Hide();
         textBox_replace().Text(textBox_replace().Text() + s->Code());
+    }
+
+    void MainWindow::btn_rename_Click(winrt::Microsoft::UI::Xaml::Controls::SplitButton const&, winrt::Microsoft::UI::Xaml::Controls::SplitButtonClickEventArgs const&)
+    {
+        m_uiUpdatesItem.CloseUIWindow(false);
+        m_uiUpdatesItem.Rename();
+    }
+
+    void MainWindow::MenuFlyoutItem_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::UI::Xaml::RoutedEventArgs const&)
+    {
+        m_uiUpdatesItem.CloseUIWindow(true);
+        m_uiUpdatesItem.Rename();
     }
 }

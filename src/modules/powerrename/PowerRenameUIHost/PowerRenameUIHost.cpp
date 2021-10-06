@@ -101,7 +101,7 @@ bool AppWindow::OnCreate(HWND, LPCREATESTRUCT) noexcept
     SetHandlers();
     ReadSettings();
 
-    m_mainUserControl.BtnRename().IsEnabled(false);
+    m_mainUserControl.UIUpdatesItem().BtnRenameEnabled(false);
     InitAutoComplete();
     SearchReplaceChanged();
     return true;
@@ -376,6 +376,10 @@ void AppWindow::SetHandlers()
         {
             ToggleAll();
         }
+        else if (property == L"Rename")
+        {
+            Rename(m_mainUserControl.UIUpdatesItem().CloseUIWindow());
+        }
     });
 
     // AutoSuggestBox Search
@@ -505,11 +509,6 @@ void AppWindow::SetHandlers()
     });
     m_mainUserControl.TglBtnEnumerateItems().Unchecked([&](winrt::Windows::Foundation::IInspectable const& sender, RoutedEventArgs const&) {
         UpdateFlag(EnumerateItems, UpdateFlagCommand::Reset);
-    });
-
-    // BtnRename
-    m_mainUserControl.BtnRename().Click([&](winrt::Windows::Foundation::IInspectable const& sender, RoutedEventArgs const&) {
-        Rename(false);
     });
 
     // BtnSettings
@@ -753,7 +752,7 @@ void AppWindow::UpdateCounts()
         // Update counts UI elements if/when added
 
         // Update Rename button state
-        m_mainUserControl.BtnRename().IsEnabled(renamingCount > 0);
+        m_mainUserControl.UIUpdatesItem().BtnRenameEnabled(renamingCount > 0);
     }
 }
 

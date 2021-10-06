@@ -5,7 +5,7 @@
 namespace winrt::PowerRenameUI_new::implementation
 {
     UIUpdates::UIUpdates() :
-        m_showAll{ true }, m_changedItemId{ -1 }, m_checked{ true }
+        m_showAll{ true }, m_changedItemId{ -1 }, m_checked{ true }, m_closeUIWindow{ false }, m_btnRenameEnabled{ false }
     {
     }
 
@@ -57,5 +57,34 @@ namespace winrt::PowerRenameUI_new::implementation
     void UIUpdates::ToggleAll()
     {
         m_propertyChanged(*this, Windows::UI::Xaml::Data::PropertyChangedEventArgs{ L"ToggleAll" });
+    }
+
+    void UIUpdates::Rename()
+    {
+        m_propertyChanged(*this, Windows::UI::Xaml::Data::PropertyChangedEventArgs{ L"Rename" });
+    }
+
+    bool UIUpdates::CloseUIWindow()
+    {
+        return m_closeUIWindow;
+    }
+
+    void UIUpdates::CloseUIWindow(bool closeUIWindow)
+    {
+        m_closeUIWindow = closeUIWindow;
+    }
+
+    bool UIUpdates::BtnRenameEnabled()
+    {
+        return m_btnRenameEnabled;
+    }
+
+    void UIUpdates::BtnRenameEnabled(bool value)
+    {
+        if (m_btnRenameEnabled != value)
+        {
+            m_btnRenameEnabled = value;
+            m_propertyChanged(*this, Windows::UI::Xaml::Data::PropertyChangedEventArgs{ L"BtnRenameEnabled" });
+        }
     }
 }
