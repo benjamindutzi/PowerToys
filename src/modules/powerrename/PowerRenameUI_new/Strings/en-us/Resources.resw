@@ -262,5 +262,7 @@
   <data name="TxtBlock_BtnApply.Text" xml:space="preserve">
     <value>Apply</value>
   </data>
-
+  <data name="TxtBlock_BtnApplyAndClose.Text" xml:space="preserve">
+    <value>Apply and close</value>
+  </data>
 </root>

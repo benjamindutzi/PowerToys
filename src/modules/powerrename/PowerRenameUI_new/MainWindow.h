@@ -41,7 +41,7 @@ namespace winrt::PowerRenameUI_new::implementation
 
         Windows::UI::Xaml::Controls::Primitives::ToggleButton TglBtnEnumerateItems();
 
-        Windows::UI::Xaml::Controls::Button BtnRename();
+        Microsoft::UI::Xaml::Controls::SplitButton BtnRename();
         Windows::UI::Xaml::Controls::Button BtnSettings();
 
         Windows::UI::Xaml::Controls::CheckBox ChckBoxSelectAll();

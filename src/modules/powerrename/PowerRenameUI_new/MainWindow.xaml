@@ -540,7 +540,7 @@
                 </muxc:SplitButton.Content>
                 <muxc:SplitButton.Flyout>
                     <MenuFlyout>
-                        <MenuFlyoutItem Text="Apply and close" />
+                        <MenuFlyoutItem x:Uid="TxtBlock_BtnApplyAndClose" />
                     </MenuFlyout>
                 </muxc:SplitButton.Flyout>
             </muxc:SplitButton>

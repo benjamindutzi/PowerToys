@@ -149,7 +149,7 @@ namespace winrt::PowerRenameUI_new::implementation
         return tglBtn_capitalize();
     }
 
-    Windows::UI::Xaml::Controls::Button MainWindow::BtnRename()
+    Microsoft::UI::Xaml::Controls::SplitButton MainWindow::BtnRename()
     {
         return btn_rename();
     }
